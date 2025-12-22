@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Kade Engine Build
+name: Build
 
 # Controls when the action will run. 
 on:
@@ -57,6 +57,7 @@ jobs:
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install
+          haxelib git extension-androidtools https://github.com/LimeExtensions/extension-androidtools.git
 
       - name: Configure Android
         run: |
@@ -109,6 +110,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@main
         with:
-          name: Kade Android Poggers
+          name: wtf
           path: export/release/android/bin/app/build/outputs/apk/debug
           if-no-files-found: warn
