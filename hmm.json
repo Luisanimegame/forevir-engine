@@ -7,7 +7,7 @@
     },
     {
       "name": "extension-androidtools",
-      "type": "haxelib",
+      "type": "haxelib"
     },
     {
       "name": "lime",
