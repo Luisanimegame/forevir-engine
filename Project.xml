@@ -42,13 +42,12 @@
 
 	<haxedev set='webgl' if="html5" />
 
-	<haxelib name="extension-androidtools" if="android" />
-
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
 	<haxelib name="flixel-ui" />
 	<haxelib name="discord_rpc" if="desktop" />
 	<haxelib name="hxcpp-debug-server" if="debug" />
+	<haxelib name="extension-androidtools" if="android" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
