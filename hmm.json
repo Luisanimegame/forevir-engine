@@ -6,6 +6,10 @@
       "version": "4.2.1"
     },
     {
+      "name": "extension-androidtools",
+      "type": "haxelib",
+    },
+    {
       "name": "lime",
       "type": "haxelib",
       "version": "7.9.0"
@@ -45,12 +49,6 @@
       "type": "git",
       "ref": "master",
       "url": "https://github.com/Aidan63/linc_discord-rpc"
-    },
-    {
-      "name": "extension-androidtools",
-      "type": "git",
-      "ref": "main",
-      "url": "https://github.com/LimeExtensions/extension-androidtools"
     }
   ]
 }
