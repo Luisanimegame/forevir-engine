@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-java@main
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@38fd78cc3a7960b281cf4a33a63a9c1543ac4598
