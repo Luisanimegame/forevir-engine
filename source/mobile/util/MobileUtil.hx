@@ -33,8 +33,8 @@ class MobileUtil {
    */
 public static function getDirectory():String {
     #if android
-    var preferredPath = "/storage/emulated/0/.FNF Doors/";
-    var fallbackPath = "/storage/emulated/0/Android/media/com.glasshat.glasshatengine/";
+    var preferredPath = "/storage/emulated/0/.ForeverEngine/";
+    var fallbackPath = "/storage/emulated/0/Android/media/com.crowplexus.foreverenginelegacy/";
     
     if (FileSystem.exists(preferredPath + "assets") && FileSystem.isDirectory(preferredPath + "assets")) {
         useAlternativePath = false;
