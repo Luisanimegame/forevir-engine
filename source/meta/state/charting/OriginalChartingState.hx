@@ -315,6 +315,12 @@ class OriginalChartingState extends MusicBeatState
 		stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 0, 999, 0);
 		stepperLength.value = _song.notes[curBar].lengthInSteps;
 		stepperLength.name = "section_length";
+		
+		stepperLength.callback = function() 
+		{
+		    _song.notes[curBar].lengthInSteps = Std.int(stepperLength.value);
+		    updateGrid();
+		};
 
 		stepperSectionBPM = new FlxUINumericStepper(10, 80, 1, Conductor.bpm, 0, 999, 0);
 		stepperSectionBPM.value = Conductor.bpm;
@@ -515,19 +521,18 @@ class OriginalChartingState extends MusicBeatState
 			else
 				return _song.notes[curBar].lengthInSteps;
 	}*/
-	function sectionStartTime():Float
+	function sectionStartTime(?sec:Int = null):Float
 	{
-		var daBPM:Float = _song.bpm;
-		var daPos:Float = 0;
-		for (i in 0...curBar)
-		{
-			if (_song.notes[i].changeBPM)
-			{
-				daBPM = _song.notes[i].bpm;
-			}
-			daPos += 4 * (1000 * 60 / daBPM);
-		}
-		return daPos;
+	    if (sec == null) sec = curBar;
+	    var daBPM:Float = _song.bpm;
+	    var daPos:Float = 0;
+	    for (i in 0...sec)
+	    {
+	        if (_song.notes[i].changeBPM)
+	            daBPM = _song.notes[i].bpm;
+	        daPos += (_song.notes[i].lengthInSteps / 4.0) * (60 / daBPM * 1000);
+	    }
+	    return daPos;
 	}
 
 	var lastSongPos:Null<Float> = null;
@@ -759,12 +764,6 @@ class OriginalChartingState extends MusicBeatState
 		
 		if (prevBar != curBar)
 		{
-		    // Auto-add sections se necessário (pra quando tocar pra frente)
-		    while (curBar >= _song.notes.length)
-		    {
-		        addSection();
-		    }
-		    
 		    updateGrid();
 		    updateSectionUI();
 		    updateHeads();
@@ -984,7 +983,7 @@ class OriginalChartingState extends MusicBeatState
 			if (daSus > 0)
 			{
 				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE * 0.5),
-					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
+					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * _song.notes[curBar].lengthInSteps, 0, gridBG.height)));
 				curRenderedSustains.add(sustainVis);
 			}
 		}
@@ -1003,6 +1002,27 @@ class OriginalChartingState extends MusicBeatState
 		};
 
 		_song.notes.push(sec);
+	}
+	
+	override function updateBar():Void
+	{
+	    var accumulatedSteps:Int = 0;
+	    var bar:Int = 0;
+	    while (true)
+	    {
+	        if (bar >= _song.notes.length)
+	        {
+	            addSection();
+	        }
+	        var len:Int = _song.notes[bar].lengthInSteps;
+	        if (accumulatedSteps + len > curStep)
+	        {
+	            break;
+	        }
+	        accumulatedSteps += len;
+	        bar++;
+	    }
+	    curBar = bar;
 	}
 
 	function selectNote(note:Note):Void
@@ -1090,7 +1110,7 @@ class OriginalChartingState extends MusicBeatState
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
+	    return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, _song.notes[curBar].lengthInSteps * Conductor.stepCrochet);
 	}
 
 	function getYfromStrum(strumTime:Float):Float
