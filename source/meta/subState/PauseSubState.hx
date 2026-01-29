@@ -16,6 +16,7 @@ import meta.state.*;
 import meta.state.menus.*;
 import sys.thread.Mutex;
 import sys.thread.Thread;
+import meta.state.charting.*; //merda
 
 class PauseSubState extends MusicBeatSubState
 {
@@ -126,6 +127,9 @@ class PauseSubState extends MusicBeatSubState
 					close();
 				case "Restart Song":
 					Main.switchState(new PlayState());
+				case "Chart Editor":
+			  	//PlayState.deaths = 69; voce tem skills (odilolk reference)
+					Main.switchState(new OriginalChartingState());
 				case "Exit to menu":
 					PlayState.resetMusic();
 					PlayState.deaths = 0;

@@ -174,6 +174,8 @@ class OriginalChartingState extends MusicBeatState
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
+		
+		#if mobile addVPad(FULL, A_B_C_X_Y); #end //porra again
 	}
 
 	function addSongUI():Void
@@ -623,7 +625,7 @@ class OriginalChartingState extends MusicBeatState
 				dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
 		}
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (FlxG.keys.justPressed.ENTER #if mobile || vPad.buttonA.justPressed #end)
 		{
 			lastBar = curBar;
 			PlayState.SONG = _song;
@@ -632,11 +634,11 @@ class OriginalChartingState extends MusicBeatState
 			Main.switchState(new PlayState());
 		}
 
-		if (FlxG.keys.justPressed.E)
+		if (FlxG.keys.justPressed.E #if mobile || vPad.buttonX.justPressed #end)
 		{
 			changeNoteSustain(Conductor.stepCrochet);
 		}
-		if (FlxG.keys.justPressed.Q)
+		if (FlxG.keys.justPressed.Q #if mobile || vPad.buttonY.justPressed #end)
 		{
 			changeNoteSustain(-Conductor.stepCrochet);
 		}
@@ -659,7 +661,7 @@ class OriginalChartingState extends MusicBeatState
 
 		if (!typingShit.hasFocus)
 		{
-			if (FlxG.keys.justPressed.SPACE)
+			if (FlxG.keys.justPressed.SPACE #if mobile || vPad.buttonC.justPressed #end)
 			{
 				if (songMusic.playing)
 				{
@@ -692,14 +694,14 @@ class OriginalChartingState extends MusicBeatState
 
 			if (!FlxG.keys.pressed.SHIFT)
 			{
-				if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
+				if (FlxG.keys.pressed.W #if mobile || vPad.buttonUp.pressed #end || FlxG.keys.pressed.S #if mobile || vPad.buttonDown.pressed #end)
 				{
 					songMusic.pause();
 					vocals.pause();
 
 					var daTime:Float = 700 * FlxG.elapsed;
 
-					if (FlxG.keys.pressed.W)
+					if (FlxG.keys.pressed.W #if mobile || vPad.buttonUp.pressed #end)
 					{
 						songMusic.time -= daTime;
 					}
@@ -711,14 +713,14 @@ class OriginalChartingState extends MusicBeatState
 			}
 			else
 			{
-				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
+				if (FlxG.keys.justPressed.W #if mobile || vPad.buttonUp.justPressed #end || FlxG.keys.justPressed.S #if mobile || vPad.buttonDown.justPressed #end)
 				{
 					songMusic.pause();
 					vocals.pause();
 
 					var daTime:Float = Conductor.stepCrochet * 2;
 
-					if (FlxG.keys.justPressed.W)
+					if (FlxG.keys.justPressed.W #if mobile || vPad.buttonUp.justPressed #end)
 					{
 						songMusic.time -= daTime;
 					}
@@ -738,11 +740,11 @@ class OriginalChartingState extends MusicBeatState
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
 		var shiftThing:Int = 1;
-		if (FlxG.keys.pressed.SHIFT)
+		if (FlxG.keys.pressed.SHIFT #if mobile || vPad.buttonB.justPressed #end)
 			shiftThing = 4;
-		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
+		if (FlxG.keys.justPressed.RIGHT #if mobile || vPad.buttonRight.justPressed #end || FlxG.keys.justPressed.D)
 			changeSection(curBar + shiftThing);
-		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
+		if (FlxG.keys.justPressed.LEFT #if mobile || vPad.buttonLeft.justPressed #end || FlxG.keys.justPressed.A)
 			changeSection(curBar - shiftThing);
 
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition * 0.001, 2))
@@ -1151,11 +1153,15 @@ class OriginalChartingState extends MusicBeatState
 
 		if ((data != null) && (data.length > 0))
 		{
+			#if android
+			MobileUtil.save(_song.song.toLowerCase(), ".json", data.trim());
+			#else // eles me dao medo
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
+			#end
 		}
 	}
 
@@ -1165,7 +1171,7 @@ class OriginalChartingState extends MusicBeatState
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
-		FlxG.log.notice("Successfully saved LEVEL DATA.");
+		FlxG.log.notice("OLHOS OBSERVANDO");
 	}
 
 	/**
@@ -1188,6 +1194,6 @@ class OriginalChartingState extends MusicBeatState
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
-		FlxG.log.error("Problem saving Level data");
+		FlxG.log.error("bct deu erro de novo");
 	}
 }

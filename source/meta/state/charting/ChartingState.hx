@@ -160,13 +160,15 @@ class ChartingState extends MusicBeatState
 
 		FlxG.mouse.useSystemCursor = false; // Use system cursor because it's prettier
 		FlxG.mouse.visible = true; // Hide mouse on start
+		
+		#if mobile addVPad(FULL, A_B); #end // tem poucos controles, porra
 	}
 
 	var hitSoundsPlayed:Array<Note> = [];
 
 	override public function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.SPACE)
+		if (FlxG.keys.justPressed.SPACE #if mobile || vPad.buttonB.justPressed #end)
 		{
 			if (songMusic.playing)
 			{
@@ -274,7 +276,7 @@ class ChartingState extends MusicBeatState
 		}
 		// */
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (FlxG.keys.justPressed.ENTER #if mobile || vPad.buttonA.justPressed #end)
 		{
 			songPosition = songMusic.time;
 
