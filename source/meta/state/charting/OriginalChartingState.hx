@@ -84,6 +84,12 @@ class OriginalChartingState extends MusicBeatState
 
 	var playTicksBf:FlxUICheckBox = null;
 	var playTicksDad:FlxUICheckBox = null;
+	
+	var lastSectionLength:Int = 16;
+	var lastSectionBPM:Float = 0;
+	var lastMustHit:Bool = true;
+	var lastAltAnim:Bool = false;
+	var lastChangeBPM:Bool = false;
 
 	override function create()
 	{
@@ -315,24 +321,10 @@ class OriginalChartingState extends MusicBeatState
 	    stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 0, 999, 0);
 	    stepperLength.value = _song.notes[curBar].lengthInSteps;
 	    stepperLength.name = "section_length";
-	    stepperLength.callback = function(value:Float)
-	    {
-	        _song.notes[curBar].lengthInSteps = Std.int(value);
-	        updateGrid();
-	    };
 	
 	    stepperSectionBPM = new FlxUINumericStepper(10, 80, 1, Conductor.bpm, 0, 999, 0);
 	    stepperSectionBPM.value = Conductor.bpm;
 	    stepperSectionBPM.name = 'section_bpm';
-	    stepperSectionBPM.callback = function(value:Float)
-	    {
-	        _song.notes[curBar].bpm = value;
-	        if (_song.notes[curBar].changeBPM) 
-	        {
-	            Conductor.changeBPM(value);
-	            updateGrid(); // Pra refletir BPM change se afetar
-	        }
-	    };
 	
 	    var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 130, 1, 1, -999, 999, 0);
 	
@@ -364,32 +356,34 @@ class OriginalChartingState extends MusicBeatState
 	        updateGrid(); // Pra refletir no mustPress das notes
 	    };
 	
-	    check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alt Animation", 100); // Assumindo que tá truncado, mas add se tiver
+	    check_altAnim = new FlxUICheckBox(10, 300, null, null, "Alt Animation", 100); // Ajuste a posição Y se precisar (ex: 300 é guess baseado no truncado)
 	    check_altAnim.name = 'check_altAnim';
 	    check_altAnim.callback = function()
 	    {
 	        _song.notes[curBar].altAnim = check_altAnim.checked;
 	    };
 	
-	    check_changeBPM = new FlxUICheckBox(10, 60, null, null, "Change BPM", 100); // Posição assumida, ajuste se preciso
+	    check_changeBPM = new FlxUICheckBox(10, 60, null, null, "Change BPM", 100);
 	    check_changeBPM.name = 'check_changeBPM';
 	    check_changeBPM.callback = function()
 	    {
 	        _song.notes[curBar].changeBPM = check_changeBPM.checked;
 	        if (check_changeBPM.checked)
 	        {
-	            Conductor.changeBPM(_song.notes[curBar].bpm);
+	            Conductor.changeBPM(stepperSectionBPM.value);
 	            updateGrid();
 	        }
 	    };
 	
-	    // Add os outros elementos como antes...
 	    tab_group_section.add(stepperLength);
 	    tab_group_section.add(stepperSectionBPM);
+	    tab_group_section.add(stepperCopy);
+	    tab_group_section.add(copyButton);
+	    tab_group_section.add(clearSectionButton);
+	    tab_group_section.add(swapSection);
 	    tab_group_section.add(check_mustHitSection);
 	    tab_group_section.add(check_altAnim);
 	    tab_group_section.add(check_changeBPM);
-	    // etc.
 	
 	    UI_box.addGroup(tab_group_section);
 	}
@@ -793,6 +787,49 @@ class OriginalChartingState extends MusicBeatState
 		    updateHeads();
 		}
 		
+		if (Std.int(stepperLength.value) != lastSectionLength)
+		{
+		    lastSectionLength = Std.int(stepperLength.value);
+		    _song.notes[curBar].lengthInSteps = lastSectionLength;
+		    updateGrid();
+		}
+		
+		if (stepperSectionBPM.value != lastSectionBPM)
+		{
+		    lastSectionBPM = stepperSectionBPM.value;
+		    _song.notes[curBar].bpm = lastSectionBPM;
+		    if (_song.notes[curBar].changeBPM)
+		    {
+		        Conductor.changeBPM(lastSectionBPM);
+		        updateGrid();
+		    }
+		}
+		
+		if (check_mustHitSection.checked != lastMustHit)
+		{
+		    lastMustHit = check_mustHitSection.checked;
+		    _song.notes[curBar].mustHitSection = lastMustHit;
+		    updateHeads();
+		    updateGrid();
+		}
+		
+		if (check_altAnim.checked != lastAltAnim)
+		{
+		    lastAltAnim = check_altAnim.checked;
+		    _song.notes[curBar].altAnim = lastAltAnim;
+		}
+		
+		if (check_changeBPM.checked != lastChangeBPM)
+		{
+		    lastChangeBPM = check_changeBPM.checked;
+		    _song.notes[curBar].changeBPM = lastChangeBPM;
+		    if (lastChangeBPM)
+		    {
+		        Conductor.changeBPM(stepperSectionBPM.value);
+		        updateGrid();
+		    }
+		}
+		
 		super.update(elapsed);
 
 		lastSongPos = Conductor.songPosition;
@@ -907,6 +944,12 @@ class OriginalChartingState extends MusicBeatState
 		check_altAnim.checked = sec.altAnim;
 		check_changeBPM.checked = sec.changeBPM;
 		stepperSectionBPM.value = sec.bpm;
+		
+		lastSectionLength = Std.int(stepperLength.value);
+		lastSectionBPM = stepperSectionBPM.value;
+		lastMustHit = check_mustHitSection.checked;
+		lastAltAnim = check_altAnim.checked;
+		lastChangeBPM = check_changeBPM.checked;
 
 		updateHeads();
 	}
