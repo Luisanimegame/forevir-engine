@@ -315,11 +315,6 @@ class OriginalChartingState extends MusicBeatState
 		stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 0, 999, 0);
 		stepperLength.value = _song.notes[curBar].lengthInSteps;
 		stepperLength.name = "section_length";
-		stepperLength.callback = function(value:Float)
-		{
-			_song.notes[curBar].lengthInSteps = Std.int(value);
-			updateGrid();
-		};
 
 		stepperSectionBPM = new FlxUINumericStepper(10, 80, 1, Conductor.bpm, 0, 999, 0);
 		stepperSectionBPM.value = Conductor.bpm;
