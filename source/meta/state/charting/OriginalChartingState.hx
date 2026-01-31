@@ -639,7 +639,7 @@ class OriginalChartingState extends MusicBeatState
 		{
 			changeNoteSustain(Conductor.stepCrochet);
 		}
-		if (FlxG.keys.justPressed.Q não#if mobile || vPad.buttonX.justPressed #end)
+		if (FlxG.keys.justPressed.Q #if mobile || vPad.buttonX.justPressed #end)
 		{
 			changeNoteSustain(-Conductor.stepCrochet);
 		}
