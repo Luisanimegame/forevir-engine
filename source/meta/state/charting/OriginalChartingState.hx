@@ -75,6 +75,7 @@ class OriginalChartingState extends MusicBeatState
 	var curSelectedNote:Array<Dynamic>;
 
 	var tempBpm:Float = 0;
+	var gridBlackLine:FlxSprite;
 
 	var vocals:FlxSound;
 
@@ -93,7 +94,7 @@ class OriginalChartingState extends MusicBeatState
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
-		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width * 0.5).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width * 0.5).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
 
 		curRenderedNotes = new FlxTypedGroup<Note>();
@@ -538,6 +539,38 @@ class OriginalChartingState extends MusicBeatState
 		_song.song = typingShit.text;
 		
 		updateHeads();
+		
+		var upP = controls.UP_P;
+		var rightP = controls.RIGHT_P;
+		var downP = controls.DOWN_P;
+		var leftP = controls.LEFT_P;
+
+		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
+
+		if ((upP || rightP || downP || leftP))
+		{
+			for(i in 0...controlArray.length)
+			{
+				if (controlArray[i])
+				{
+					for (n in 0..._song.notes[curStep].sectionNotes.length)
+						{
+							var note = _song.notes[curStep].sectionNotes[n];
+							if (note == null)
+								continue;
+							if (note[0] == Conductor.songPosition && note[1] % 4 == i)
+							{
+								trace('GAMING');
+								_song.notes[curStep].sectionNotes.remove(note);
+							}
+						}
+					trace('adding note');
+					_song.notes[curStep].sectionNotes.push([Conductor.songPosition, i, 0]);
+					updateGrid();
+				}
+			}
+
+		}
 
 		// real thanks for the help with this ShadowMario, you are the best -Ghost
 		var playedSound:Array<Bool> = [];
@@ -903,7 +936,7 @@ class OriginalChartingState extends MusicBeatState
 	function updateGrid():Void
 	{
 		remove(gridBG);
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * _song.notes[curSection].lengthInSteps);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * _song.notes[curBar].lengthInSteps);
         add(gridBG);
 
 		remove(gridBlackLine);
